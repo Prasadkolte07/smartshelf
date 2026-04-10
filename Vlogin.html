@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Vendor Login — SmartShelf</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#0c0c14; --ink2:#111120; --ink3:#181830;
+  --accent:#ff4d00; --accent2:#00c9a7; --gold:#f5a623; --primary:#3d3aff;
+  --as:rgba(255,77,0,.14); --a2s:rgba(0,201,167,.14); --gs:rgba(245,166,35,.14); --ps:rgba(61,58,255,.14);
+  --border:rgba(255,255,255,.07); --bh:rgba(255,255,255,.14);
+  --r:14px; --tr:all .22s cubic-bezier(.4,0,.2,1);
+}
+html{scroll-behavior:smooth;height:100%;}
+body{
+  font-family:'Outfit',sans-serif;
+  background:var(--ink);
+  color:#fff;
+  overflow-x:hidden;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+button,select,input{font-family:'Outfit',sans-serif;}
+a{text-decoration:none;color:inherit;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#252538;border-radius:4px;}
+
+/* ── AMBIENT GLOWS ── */
+.bg-glow-1{position:fixed;top:-15%;left:-8%;width:700px;height:700px;background:radial-gradient(circle,rgba(61,58,255,.07),transparent 68%);pointer-events:none;z-index:0;}
+.bg-glow-2{position:fixed;bottom:-20%;right:-5%;width:600px;height:600px;background:radial-gradient(circle,rgba(255,77,0,.06),transparent 68%);pointer-events:none;z-index:0;}
+.bg-glow-3{position:fixed;top:40%;left:50%;transform:translateX(-50%);width:900px;height:400px;background:radial-gradient(ellipse,rgba(0,201,167,.03),transparent 65%);pointer-events:none;z-index:0;}
+
+/* ── GRID TEXTURE ── */
+.bg-grid{
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none;z-index:0;
+}
+
+/* ── HEADER ── */
+.vhdr{
+  position:relative;z-index:10;
+  padding:20px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid var(--border);
+  background:rgba(11,11,20,.7);
+  backdrop-filter:blur(20px);
+}
+.logo{display:flex;align-items:center;gap:10px;}
+.lm{
+  width:36px;height:36px;background:var(--primary);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:.88rem;
+  box-shadow:0 4px 16px rgba(61,58,255,.3);
+}
+.ln{font-weight:800;font-size:1.1rem;line-height:1;}
+.ln span{color:var(--accent);}
+.ls{font-size:.56rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.8px;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:12px;font-size:.8rem;color:rgba(255,255,255,.35);}
+.hdr-right a{color:var(--primary);font-weight:600;transition:var(--tr);}
+.hdr-right a:hover{color:#8b8fff;}
+
+/* ── MAIN LAYOUT ── */
+.page{
+  flex:1;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  position:relative;z-index:1;
+  min-height:calc(100vh - 68px);
+}
+
+/* ── LEFT PANEL ── */
+.left{
+  position:relative;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:60px 64px;
+  border-right:1px solid var(--border);
+  overflow:hidden;
+}
+.left-glow{
+  position:absolute;top:-10%;right:-15%;
+  width:500px;height:500px;
+  background:radial-gradient(circle,rgba(61,58,255,.1),transparent 65%);
+  pointer-events:none;
+}
+.left-glow2{
+  position:absolute;bottom:-20%;left:-10%;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(255,77,0,.07),transparent 65%);
+  pointer-events:none;
+}
+
+.eyebrow{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:2.5px;
+  color:var(--accent);
+  background:var(--as);
+  border:1px solid rgba(255,77,0,.22);
+  padding:5px 13px;border-radius:20px;
+  margin-bottom:26px;width:fit-content;
+}
+.eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent);animation:lp 1.8s ease infinite;}
+@keyframes lp{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,77,0,.5);}50%{opacity:.6;box-shadow:0 0 0 5px rgba(255,77,0,0);}}
+
+.left h1{
+  font-size:clamp(2.2rem,3.2vw,3.2rem);
+  font-weight:900;color:#fff;
+  letter-spacing:-.05em;line-height:1.04;
+  margin-bottom:16px;
+}
+.left h1 em{
+  font-style:normal;
+  background:linear-gradient(135deg,#3d3aff 0%,#00b4d8 50%,#2ed573 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.left-sub{
+  color:rgba(255,255,255,.36);
+  font-size:.9rem;line-height:1.75;
+  max-width:420px;margin-bottom:40px;
+}
+
+/* ── STATS ROW ── */
+.stats-row{
+  display:flex;gap:0;
+  background:rgba(255,255,255,.03);
+  border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+  width:fit-content;margin-bottom:44px;
+}
+.stat{padding:16px 26px;border-right:1px solid var(--border);}
+.stat:last-child{border:none;}
+.stat-v{font-size:1.55rem;font-weight:900;color:#fff;letter-spacing:-.04em;line-height:1;}
+.stat-v span{font-size:.9rem;color:var(--accent2);font-weight:700;}
+.stat-l{font-size:.62rem;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;}
+
+/* ── BENEFITS ── */
+.benefits{display:flex;flex-direction:column;gap:14px;}
+.benefit{
+  display:flex;align-items:flex-start;gap:13px;
+  padding:14px 16px;
+  background:rgba(255,255,255,.025);
+  border:1px solid var(--border);
+  border-radius:12px;
+  transition:var(--tr);
+  cursor:default;
+}
+.benefit:hover{background:rgba(61,58,255,.07);border-color:rgba(61,58,255,.25);}
+.bico{
+  width:36px;height:36px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:.95rem;flex-shrink:0;
+}
+.bico.b{background:var(--ps);}
+.bico.g{background:var(--a2s);}
+.bico.o{background:var(--as);}
+.bico.y{background:var(--gs);}
+.btxt-t{font-size:.82rem;font-weight:700;color:#fff;margin-bottom:2px;}
+.btxt-s{font-size:.72rem;color:rgba(255,255,255,.36);line-height:1.5;}
+
+/* ── RIGHT PANEL (FORM) ── */
+.right{
+  display:flex;align-items:center;justify-content:center;
+  padding:40px 60px;
+  position:relative;
+}
+
+.form-card{
+  width:100%;max-width:440px;
+  position:relative;
+}
+
+/* ── TABS ── */
+.auth-tabs{
+  display:flex;gap:4px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--border);
+  border-radius:12px;padding:4px;
+  margin-bottom:32px;
+}
+.auth-tab{
+  flex:1;padding:9px;border-radius:9px;
+  font-size:.82rem;font-weight:700;
+  background:none;border:none;color:rgba(255,255,255,.38);
+  transition:var(--tr);cursor:pointer;
+}
+.auth-tab.on{
+  background:var(--primary);color:#fff;
+  box-shadow:0 4px 16px rgba(61,58,255,.32);
+}
+.auth-tab:not(.on):hover{color:rgba(255,255,255,.75);background:rgba(255,255,255,.06);}
+
+/* ── FORM PANELS ── */
+.fpanel{display:none;}
+.fpanel.on{display:block;}
+
+.form-title{font-size:1.45rem;font-weight:900;color:#fff;letter-spacing:-.04em;margin-bottom:5px;}
+.form-sub{font-size:.8rem;color:rgba(255,255,255,.32);margin-bottom:26px;line-height:1.6;}
+
+/* ── SOCIAL BTNS ── */
+.socials{display:flex;flex-direction:column;gap:9px;margin-bottom:20px;}
+.soc-btn{
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.05);
+  border:1.5px solid var(--border);
+  color:rgba(255,255,255,.7);
+  padding:11px 16px;border-radius:11px;
+  font-size:.82rem;font-weight:600;
+  transition:var(--tr);cursor:pointer;width:100%;
+}
+.soc-btn:hover{background:rgba(255,255,255,.1);border-color:var(--bh);color:#fff;transform:translateY(-1px);}
+.soc-icon{width:20px;height:20px;flex-shrink:0;}
+
+/* ── DIVIDER ── */
+.divider{
+  display:flex;align-items:center;gap:10px;
+  font-size:.72rem;color:rgba(255,255,255,.24);
+  margin-bottom:20px;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ── FIELDS ── */
+.fgroup{display:flex;flex-direction:column;gap:13px;margin-bottom:20px;}
+.field{position:relative;}
+.field-label{
+  font-size:.69rem;font-weight:700;
+  color:rgba(255,255,255,.38);
+  text-transform:uppercase;letter-spacing:1px;
+  margin-bottom:6px;display:block;
+}
+.fi{
+  width:100%;
+  background:rgba(255,255,255,.04);
+  border:1.5px solid var(--border);
+  color:#fff;
+  padding:12px 14px;
+  border-radius:11px;
+  font-size:.88rem;
+  outline:none;
+  transition:var(--tr);
+  appearance:none;
+}
+.fi::placeholder{color:rgba(255,255,255,.2);}
+.fi:hover{background:rgba(255,255,255,.06);border-color:var(--bh);}
+.fi:focus{
+  background:rgba(61,58,255,.08);
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px rgba(61,58,255,.12);
+  color:#fff;
+}
+.fi-icon{
+  position:absolute;right:13px;bottom:13px;
+  background:none;border:none;cursor:pointer;
+  font-size:.88rem;opacity:.35;transition:opacity .2s;padding:2px;
+}
+.fi-icon:hover{opacity:.75;}
+.fi-has-icon{padding-right:40px;}
+
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* Role selector */
+.role-select-wrap{position:relative;}
+.role-select-wrap::after{
+  content:'▾';
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  font-size:.75rem;color:rgba(255,255,255,.35);pointer-events:none;
+}
+.fi.select-fi{padding-right:36px;cursor:pointer;}
+.fi.select-fi option{background:#1a1a2e;color:#fff;}
+
+/* ── FORGOT LINK ── */
+.forgot-row{display:flex;justify-content:flex-end;margin-top:-6px;margin-bottom:14px;}
+.forgot-link{font-size:.76rem;color:rgba(255,255,255,.32);transition:var(--tr);}
+.forgot-link:hover{color:var(--primary);}
+
+/* ── REMEMBER ROW ── */
+.check-row{display:flex;align-items:center;gap:9px;margin-bottom:20px;}
+.chk{
+  width:16px;height:16px;border-radius:4px;
+  border:1.5px solid var(--border);
+  background:rgba(255,255,255,.04);
+  cursor:pointer;accent-color:var(--primary);
+}
+.check-label{font-size:.78rem;color:rgba(255,255,255,.36);}
+
+/* ── SUBMIT BTN ── */
+.submit-btn{
+  width:100%;padding:14px;border:none;border-radius:12px;
+  background:linear-gradient(135deg,var(--primary),#2e2bcc);
+  color:#fff;font-size:.92rem;font-weight:800;
+  cursor:pointer;transition:var(--tr);
+  position:relative;overflow:hidden;
+  box-shadow:0 6px 24px rgba(61,58,255,.32);
+  letter-spacing:.01em;
+}
+.submit-btn::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),transparent);
+  border-top:1px solid rgba(255,255,255,.15);
+  border-radius:inherit;
+}
+.submit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 36px rgba(61,58,255,.48);
+  background:linear-gradient(135deg,#4a47ff,#3533dd);
+}
+.submit-btn:active{transform:translateY(0);}
+.submit-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;}
+.btn-inner{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-spinner{
+  width:16px;height:16px;border:2px solid rgba(255,255,255,.3);
+  border-top-color:#fff;border-radius:50%;
+  animation:spin .7s linear infinite;display:none;
+}
+.loading .btn-spinner{display:block;}
+.loading .btn-text{display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── TERMS ── */
+.terms-txt{font-size:.72rem;color:rgba(255,255,255,.22);text-align:center;margin-top:14px;line-height:1.6;}
+.terms-txt a{color:rgba(255,255,255,.44);transition:var(--tr);}
+.terms-txt a:hover{color:#fff;}
+
+/* ── SWITCH LINK ── */
+.switch-link{
+  text-align:center;margin-top:22px;
+  font-size:.78rem;color:rgba(255,255,255,.3);
+}
+.switch-link a{color:var(--primary);font-weight:700;transition:var(--tr);}
+.switch-link a:hover{color:#8b8fff;}
+
+/* ── OTP SCREEN ── */
+.otp-screen{display:none;text-align:center;padding:10px 0;}
+.otp-screen.on{display:block;}
+.otp-icon-wrap{
+  width:72px;height:72px;margin:0 auto 20px;
+  position:relative;display:flex;align-items:center;justify-content:center;
+}
+.otp-ring{
+  position:absolute;inset:-6px;border-radius:50%;
+  border:2px solid transparent;
+  background:linear-gradient(135deg,#00b4d8,#2ed573) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:destination-out;mask-composite:exclude;
+  animation:spinR 3s linear infinite;
+}
+@keyframes spinR{to{transform:rotate(360deg);}}
+.otp-h{font-size:1.3rem;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.03em;}
+.otp-target{font-size:.82rem;color:rgba(255,255,255,.36);margin-bottom:28px;line-height:1.6;}
+.otp-target strong{color:rgba(255,255,255,.7);}
+
+.otp-boxes{display:flex;gap:9px;justify-content:center;margin-bottom:18px;}
+.otp-box{
+  width:52px;height:60px;
+  background:rgba(255,255,255,.04);
+  border:2px solid var(--border);
+  border-radius:12px;
+  text-align:center;font-size:1.6rem;font-weight:900;color:#fff;
+  outline:none;transition:all .2s;caret-color:var(--primary);
+}
+.otp-sep{font-size:1rem;color:rgba(255,255,255,.18);align-self:center;margin:0 2px;}
+.otp-box:focus{border-color:var(--primary);background:rgba(61,58,255,.1);box-shadow:0 0 0 3px rgba(61,58,255,.15);}
+.otp-box.filled{border-color:rgba(0,201,167,.5);color:#fff;}
+.otp-box.error{border-color:var(--accent);background:rgba(255,77,0,.06);animation:shake .4s;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-5px);}40%{transform:translateX(5px);}60%{transform:translateX(-3px);}80%{transform:translateX(3px);}}
+
+.otp-timer-row{display:flex;align-items:center;justify-content:center;gap:6px;font-size:.78rem;color:rgba(255,255,255,.3);margin-bottom:6px;}
+.otp-cd{font-weight:700;color:var(--primary);font-variant-numeric:tabular-nums;}
+.otp-cd.urgent{color:var(--accent);}
+.otp-resend{font-size:.75rem;color:rgba(255,255,255,.28);margin-top:12px;}
+.otp-resend-btn{background:none;border:none;color:var(--primary);font-weight:700;font-size:.75rem;cursor:pointer;padding:0;transition:var(--tr);}
+.otp-resend-btn:disabled{color:rgba(255,255,255,.22);cursor:not-allowed;}
+.otp-resend-btn:not(:disabled):hover{color:#8b8fff;}
+.otp-back{display:block;margin-top:16px;font-size:.75rem;color:rgba(255,255,255,.26);transition:var(--tr);cursor:pointer;}
+.otp-back:hover{color:rgba(255,255,255,.6);}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{display:none;text-align:center;padding:20px 0;}
+.success-screen.on{display:block;}
+.success-ico{
+  width:80px;height:80px;border-radius:50%;margin:0 auto 20px;
+  background:linear-gradient(135deg,rgba(0,201,167,.2),rgba(61,58,255,.2));
+  border:2px solid rgba(0,201,167,.4);
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+  animation:popIn .5s cubic-bezier(.34,1.6,.64,1) both;
+}
+@keyframes popIn{from{opacity:0;transform:scale(.5);}to{opacity:1;transform:scale(1);}}
+.success-h{font-size:1.4rem;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-.03em;}
+.success-sub{font-size:.82rem;color:rgba(255,255,255,.36);line-height:1.65;margin-bottom:24px;}
+.success-bar{
+  width:100%;height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden;margin-bottom:12px;
+}
+.success-bar-fill{
+  height:100%;width:0;border-radius:2px;
+  background:linear-gradient(90deg,var(--primary),var(--accent2));
+  transition:width 2.5s linear;
+}
+.success-bar-txt{font-size:.72rem;color:rgba(255,255,255,.26);}
+
+/* ── DEMO TIP ── */
+.demo-tip{
+  margin-top:18px;padding:12px 14px;
+  background:rgba(0,201,167,.06);
+  border:1px solid rgba(0,201,167,.15);
+  border-radius:11px;
+  font-size:.74rem;color:rgba(255,255,255,.38);line-height:1.65;
+}
+.demo-tip strong{color:var(--accent2);}
+
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:26px;left:50%;
+  transform:translateX(-50%) translateY(50px);
+  padding:10px 20px;border-radius:10px;
+  font-size:.82rem;font-weight:600;
+  z-index:9999;opacity:0;pointer-events:none;
+  transition:all .28s cubic-bezier(.4,0,.2,1);
+  white-space:nowrap;
+  box-shadow:0 8px 28px rgba(0,0,0,.3);
+  border:1px solid transparent;
+}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+#toast.ok{background:#0d2e22;color:#34d399;border-color:rgba(52,211,153,.25);}
+#toast.err{background:#2e0d14;color:#f87171;border-color:rgba(248,113,113,.2);}
+#toast.inf{background:#15152a;color:rgba(255,255,255,.75);border-color:var(--border);}
+
+/* ── FOOTER BAR ── */
+.page-footer{
+  position:relative;z-index:2;
+  padding:16px 40px;
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  background:rgba(11,11,20,.6);
+  backdrop-filter:blur(12px);
+}
+.pf-left{font-size:.72rem;color:rgba(255,255,255,.2);}
+.pf-links{display:flex;gap:18px;}
+.pf-links a{font-size:.72rem;color:rgba(255,255,255,.2);transition:var(--tr);}
+.pf-links a:hover{color:rgba(255,255,255,.5);}
+
+/* ── TRUST BADGE ROW ── */
+.trust-row{
+  display:flex;gap:18px;margin-top:36px;padding-top:22px;
+  border-top:1px solid var(--border);
+  flex-wrap:wrap;
+}
+.trust-item{
+  display:flex;align-items:center;gap:6px;
+  font-size:.71rem;color:rgba(255,255,255,.26);
+}
+.trust-item::before{
+  content:'✓';width:16px;height:16px;border-radius:50%;
+  background:rgba(0,201,167,.15);color:var(--accent2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:.58rem;font-weight:800;flex-shrink:0;
+}
+
+/* ── PASSWORD STRENGTH ── */
+.pw-strength{display:flex;gap:4px;margin-top:8px;}
+.pw-seg{flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.08);transition:background .3s;}
+.pw-label{font-size:.65rem;margin-top:5px;color:rgba(255,255,255,.28);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .page{grid-template-columns:1fr;}
+  .left{display:none;}
+  .right{padding:32px 24px;}
+  .vhdr{padding:16px 20px;}
+  .page-footer{padding:14px 20px;flex-direction:column;gap:10px;text-align:center;}
+}
+@media(max-width:480px){
+  .otp-box{width:42px;height:54px;font-size:1.3rem;}
+  .auth-tabs{flex-direction:column;}
+}
+
+/* ── ENTRY ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.a1{animation:fadeUp .5s .05s ease both;}
+.a2{animation:fadeUp .5s .15s ease both;}
+.a3{animation:fadeUp .5s .25s ease both;}
+.a4{animation:fadeUp .5s .35s ease both;}
+.a5{animation:fadeUp .5s .45s ease both;}
+.left-in{animation:fadeUp .6s .1s ease both;}
+</style>
+<link rel="stylesheet" href="chatbot.css">
+</head>
+<body>
+
+<!-- Background elements -->
+<div class="bg-glow-1"></div>
+<div class="bg-glow-2"></div>
+<div class="bg-glow-3"></div>
+<div class="bg-grid"></div>
+
+<!-- Header -->
+<header class="vhdr">
+  <a class="logo" href="vendor.html">
+    <div class="lm">SS</div>
+    <div>
+      <div class="ln">Smart<span>Shelf</span></div>
+      <div class="ls">Vendor Portal</div>
+    </div>
+  </a>
+  <div class="hdr-right">
+    New to SmartShelf? <a href="#" onclick="switchTab('signup')">Create an account →</a>
+  </div>
+</header>
+
+<!-- Main page -->
+<div class="page">
+
+  <!-- ── LEFT PANEL ── -->
+  <div class="left">
+    <div class="left-glow"></div>
+    <div class="left-glow2"></div>
+    <div class="left-in">
+
+      <div class="eyebrow">Vendor Dashboard</div>
+      <h1>Grow your<br/>business with<br/><em>SmartShelf AI</em></h1>
+      <p class="left-sub">Join 12,000+ vendors selling smarter. Real-time analytics, AI pricing, and zero-hassle inventory management — all in one dashboard.</p>
+
+      <!-- Stats -->
+      <div class="stats-row a2">
+        <div class="stat">
+          <div class="stat-v">12K<span>+</span></div>
+          <div class="stat-l">Active Vendors</div>
+        </div>
+        <div class="stat">
+          <div class="stat-v">₹24<span>L avg</span></div>
+          <div class="stat-l">Monthly Revenue</div>
+        </div>
+        <div class="stat">
+          <div class="stat-v">99.2<span>%</span></div>
+          <div class="stat-l">Uptime</div>
+        </div>
+      </div>
+
+      <!-- Benefits -->
+      <div class="benefits a3">
+        <div class="benefit">
+          <div class="bico b">📊</div>
+          <div>
+            <div class="btxt-t">Real-Time Analytics Dashboard</div>
+            <div class="btxt-s">Live sales, stock, and revenue tracking with AI-powered forecasts.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="bico g">🤖</div>
+          <div>
+            <div class="btxt-t">AI-Powered Pricing Engine</div>
+            <div class="btxt-s">SmartShelf automatically optimises your prices to maximise margins.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="bico o">🚀</div>
+          <div>
+            <div class="btxt-t">0% Commission for First 3 Months</div>
+            <div class="btxt-s">Start selling with zero fees — scale before you pay a single rupee.</div>
+          </div>
+        </div>
+        <div class="benefit">
+          <div class="bico y">📦</div>
+          <div>
+            <div class="btxt-t">Smart Inventory Management</div>
+            <div class="btxt-s">Automated low-stock alerts and one-click restock across warehouses.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Trust -->
+      <div class="trust-row a4">
+        <div class="trust-item">SSL Secured</div>
+        <div class="trust-item">ISO 27001 Certified</div>
+        <div class="trust-item">GSTIN Verified</div>
+        <div class="trust-item">RBI Compliant Payouts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── RIGHT PANEL (FORM) ── -->
+  <div class="right">
+    <div class="form-card">
+
+      <!-- Tabs -->
+      <div class="auth-tabs a1">
+        <button class="auth-tab on" id="tab-login" onclick="switchTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+      </div>
+
+      <!-- ════ LOGIN PANEL ════ -->
+      <div class="fpanel on" id="panel-login">
+
+        <div id="login-form-view">
+          <div class="form-title a2">Welcome back</div>
+          <p class="form-sub a2">Sign in to your vendor dashboard</p>
+
+          <!-- Social -->
+          <div class="socials a3">
+            <button class="soc-btn" onclick="socialAuth('google')">
+              <svg class="soc-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Continue with Google
+            </button>
+            <button class="soc-btn" onclick="socialAuth('microsoft')">
+              <svg class="soc-icon" viewBox="0 0 21 21"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
+              Continue with Microsoft
+            </button>
+          </div>
+          <div class="divider a3">or sign in with email</div>
+
+          <div class="fgroup a4">
+            <div class="field">
+              <label class="field-label">Business Email</label>
+              <input class="fi" type="email" id="lEmail" placeholder="you@yourbrand.com"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Password</label>
+              <input class="fi fi-has-icon" type="password" id="lPass" placeholder="••••••••"/>
+              <button type="button" class="fi-icon" onclick="togglePw('lPass',this)">👁</button>
+            </div>
+          </div>
+
+          <div class="forgot-row a4">
+            <a class="forgot-link" href="#" onclick="showForgot()">Forgot password?</a>
+          </div>
+
+          <div class="check-row a4">
+            <input type="checkbox" class="chk" id="rememberMe" checked/>
+            <label class="check-label" for="rememberMe">Keep me signed in for 30 days</label>
+          </div>
+
+          <button class="submit-btn a5" id="loginBtn" onclick="doLogin()">
+            <div class="btn-inner">
+              <div class="btn-spinner"></div>
+              <span class="btn-text">Sign In to Dashboard →</span>
+            </div>
+          </button>
+
+          <div class="demo-tip a5">
+            <strong>🧪 Demo:</strong> Enter any email + any password. The OTP will appear in your browser console (F12 → Console tab).
+          </div>
+        </div>
+
+        <!-- Forgot password sub-view -->
+        <div id="forgot-view" style="display:none;">
+          <div style="margin-bottom:24px">
+            <button onclick="showLoginForm()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:.78rem;cursor:pointer;padding:0;display:flex;align-items:center;gap:6px;transition:color .2s;margin-bottom:20px;" onmouseover="this.style.color='rgba(255,255,255,.8)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">← Back to sign in</button>
+            <div class="form-title">Reset password</div>
+            <p class="form-sub">We'll send a reset OTP to your email</p>
+          </div>
+          <div class="fgroup">
+            <div class="field">
+              <label class="field-label">Business Email</label>
+              <input class="fi" type="email" id="fpEmail" placeholder="you@yourbrand.com"/>
+            </div>
+          </div>
+          <button class="submit-btn" id="forgotBtn" onclick="doForgot()">
+            <div class="btn-inner">
+              <div class="btn-spinner"></div>
+              <span class="btn-text">Send Reset OTP →</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════ SIGNUP PANEL ════ -->
+      <div class="fpanel" id="panel-signup">
+        <div class="form-title a2">Create your vendor account</div>
+        <p class="form-sub a2">Takes less than 2 minutes · 0% commission for 3 months</p>
+
+        <div class="socials a3">
+          <button class="soc-btn" onclick="socialAuth('google')">
+            <svg class="soc-icon" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+            Sign up with Google
+          </button>
+        </div>
+        <div class="divider a3">or register with email</div>
+
+        <div class="fgroup a4">
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Full Name</label>
+              <input class="fi" type="text" id="sName" placeholder="Rahul Sharma"/>
+            </div>
+            <div class="field">
+              <label class="field-label">Business Name</label>
+              <input class="fi" type="text" id="sBiz" placeholder="Your Brand"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Business Email</label>
+            <input class="fi" type="email" id="sEmail" placeholder="you@yourbrand.com"/>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label class="field-label">Phone</label>
+              <input class="fi" type="tel" id="sPhone" placeholder="+91 98765 43210"/>
+            </div>
+            <div class="field">
+              <label class="field-label">GSTIN (Optional)</label>
+              <input class="fi" type="text" id="sGst" placeholder="22AAAAA0000A1Z5"/>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Business Category</label>
+            <div class="role-select-wrap">
+              <select class="fi select-fi" id="sCat">
+                <option value="">Select category…</option>
+                <option>Electronics</option>
+                <option>Fashion & Apparel</option>
+                <option>Home & Furniture</option>
+                <option>Health & Beauty</option>
+                <option>Sports & Outdoors</option>
+                <option>Books & Stationery</option>
+                <option>Food & Beverages</option>
+                <option>Toys & Gaming</option>
+                <option>Automotive</option>
+                <option>Other</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label">Password</label>
+            <input class="fi fi-has-icon" type="password" id="sPass" placeholder="Min. 8 characters" oninput="checkPwStrength(this.value)"/>
+            <button type="button" class="fi-icon" onclick="togglePw('sPass',this)">👁</button>
+            <div class="pw-strength" id="pwStrength">
+              <div class="pw-seg" id="pws1"></div>
+              <div class="pw-seg" id="pws2"></div>
+              <div class="pw-seg" id="pws3"></div>
+              <div class="pw-seg" id="pws4"></div>
+            </div>
+            <div class="pw-label" id="pwLabel"></div>
+          </div>
+        </div>
+
+        <button class="submit-btn a5" id="signupBtn" onclick="doSignup()">
+          <div class="btn-inner">
+            <div class="btn-spinner"></div>
+            <span class="btn-text">Create Account & Verify OTP →</span>
+          </div>
+        </button>
+        <div class="terms-txt a5">By creating an account you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>.</div>
+      </div>
+
+      <!-- ════ OTP SCREEN ════ -->
+      <div class="otp-screen" id="otp-screen">
+        <div class="otp-icon-wrap">
+          <svg width="58" height="58" viewBox="0 0 64 64" fill="none">
+            <defs><linearGradient id="shG" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#00b4d8"/><stop offset="100%" stop-color="#2ed573"/></linearGradient></defs>
+            <path d="M32 4 L56 14 L56 34 C56 47 44 57 32 60 C20 57 8 47 8 34 L8 14 Z" fill="url(#shG)" opacity=".12"/>
+            <path d="M32 4 L56 14 L56 34 C56 47 44 57 32 60 C20 57 8 47 8 34 L8 14 Z" stroke="url(#shG)" stroke-width="1.8" fill="none"/>
+            <path d="M21 32 L29 40 L43 26" stroke="url(#shG)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="otp-ring"></div>
+        </div>
+        <div class="otp-h">Verify your identity</div>
+        <p class="otp-target">We sent a 6-digit code to<br/><strong id="otpTargetEmail">your email</strong></p>
+
+        <div class="otp-boxes" id="otpBoxes">
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code"/>
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <span class="otp-sep">—</span>
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+          <input class="otp-box" type="text" maxlength="1" inputmode="numeric" pattern="[0-9]"/>
+        </div>
+
+        <div class="otp-timer-row">⏱ OTP expires in <span id="otpCd" class="otp-cd">02:00</span></div>
+
+        <button class="submit-btn" id="otpVerifyBtn" onclick="verifyOTP()" style="margin-top:16px;">
+          <div class="btn-inner">
+            <div class="btn-spinner"></div>
+            <span class="btn-text">Verify & Enter Dashboard →</span>
+          </div>
+        </button>
+
+        <div class="otp-resend">
+          Didn't receive it? <button class="otp-resend-btn" id="otpResendBtn" onclick="resendOTP()" disabled>Resend OTP</button>
+        </div>
+        <span class="otp-back" onclick="backFromOTP()">← Change email</span>
+      </div>
+
+      <!-- ════ SUCCESS SCREEN ════ -->
+      <div class="success-screen" id="success-screen">
+        <div class="success-ico">✓</div>
+        <div class="success-h">You're in! 🎉</div>
+        <p class="success-sub">Authentication successful. Redirecting you<br/>to your vendor dashboard…</p>
+        <div class="success-bar"><div class="success-bar-fill" id="successFill"></div></div>
+        <div class="success-bar-txt">Loading dashboard…</div>
+      </div>
+
+      <!-- Switch panel link (bottom) -->
+      <div class="switch-link" id="switchLinkBottom" style="margin-top:22px;">
+        <span id="switchLinkText">Don't have an account? <a href="#" onclick="switchTab('signup')">Create one free →</a></span>
+      </div>
+
+    </div><!-- /form-card -->
+  </div><!-- /right -->
+</div><!-- /page -->
+
+<!-- Footer -->
+<footer class="page-footer">
+  <div class="pf-left">© 2025 SmartShelf Technologies Pvt. Ltd. · All rights reserved.</div>
+  <div class="pf-links">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Terms of Service</a>
+    <a href="#">Vendor Agreement</a>
+    <a href="contact.html">Support</a>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   STATE
+═══════════════════════════════════════ */
+let _otp = '', _otpEmail = '', _otpContext = 'login', _otpTimer = null;
+const API = 'http://localhost:3000/api';
+
+/* ═══════════════════════════════════════
+   TAB SWITCH
+═══════════════════════════════════════ */
+function switchTab(t) {
+  ['login','signup'].forEach(id => {
+    document.getElementById('tab-'+id).classList.toggle('on', id===t);
+    document.getElementById('panel-'+id).classList.toggle('on', id===t);
+  });
+  document.getElementById('otp-screen').classList.remove('on');
+  document.getElementById('success-screen').classList.remove('on');
+  document.getElementById('switchLinkBottom').style.display = '';
+
+  const lnk = document.getElementById('switchLinkText');
+  if(t==='login'){
+    lnk.innerHTML = `Don't have an account? <a href="#" onclick="switchTab('signup')">Create one free →</a>`;
+    document.querySelector('.hdr-right').innerHTML = `New to SmartShelf? <a href="#" onclick="switchTab('signup')">Create an account →</a>`;
+  } else {
+    lnk.innerHTML = `Already a vendor? <a href="#" onclick="switchTab('login')">Sign in →</a>`;
+    document.querySelector('.hdr-right').innerHTML = `Already a vendor? <a href="#" onclick="switchTab('login')">Sign in →</a>`;
+  }
+  showLoginForm();
+}
+
+/* ═══════════════════════════════════════
+   FORGOT PASSWORD
+═══════════════════════════════════════ */
+function showForgot() {
+  document.getElementById('login-form-view').style.display = 'none';
+  document.getElementById('forgot-view').style.display = 'block';
+}
+function showLoginForm() {
+  document.getElementById('login-form-view').style.display = 'block';
+  document.getElementById('forgot-view').style.display = 'none';
+}
+
+/* ═══════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════ */
+function doLogin() {
+  const email = document.getElementById('lEmail').value.trim();
+  const pass  = document.getElementById('lPass').value;
+  if(!email || !pass){ showToast('Please fill in all fields','err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Enter a valid business email','err'); return; }
+  _otpEmail = email; _otpContext = 'login';
+  setLoading('loginBtn', true);
+  setTimeout(() => { setLoading('loginBtn', false); sendOTP(email); }, 800);
+}
+
+/* ═══════════════════════════════════════
+   SIGNUP
+═══════════════════════════════════════ */
+function doSignup() {
+  const name  = document.getElementById('sName').value.trim();
+  const biz   = document.getElementById('sBiz').value.trim();
+  const email = document.getElementById('sEmail').value.trim();
+  const pass  = document.getElementById('sPass').value;
+  if(!name || !biz || !email || !pass){ showToast('Please fill all required fields','err'); return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Enter a valid business email','err'); return; }
+  if(pass.length < 8){ showToast('Password must be at least 8 characters','err'); return; }
+  _otpEmail = email; _otpContext = 'signup';
+  setLoading('signupBtn', true);
+  setTimeout(() => { setLoading('signupBtn', false); sendOTP(email); }, 800);
+}
+
+/* ═══════════════════════════════════════
+   FORGOT
+═══════════════════════════════════════ */
+function doForgot() {
+  const email = document.getElementById('fpEmail').value.trim();
+  if(!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ showToast('Enter a valid email','err'); return; }
+  _otpEmail = email; _otpContext = 'forgot';
+  setLoading('forgotBtn', true);
+  setTimeout(() => { setLoading('forgotBtn', false); sendOTP(email); }, 800);
+}
+
+/* ═══════════════════════════════════════
+   SEND OTP
+═══════════════════════════════════════ */
+function sendOTP(email) {
+  _otp = String(Math.floor(100000 + Math.random() * 900000));
+  console.log('%c[SmartShelf Vendor] OTP: ' + _otp, 'background:#3d3aff;color:#fff;padding:4px 10px;border-radius:4px;font-weight:bold;font-size:14px;');
+
+  // Hide current panels
+  ['panel-login','panel-signup','otp-screen','success-screen'].forEach(id => {
+    const el = document.getElementById(id);
+    el.classList.remove('on');
+    if(el.tagName !== 'DIV' || el.classList.contains('fpanel')) el.classList.remove('on');
+  });
+  document.getElementById('panel-login').classList.remove('on');
+  document.getElementById('panel-signup').classList.remove('on');
+
+  // Show OTP screen
+  document.getElementById('otp-screen').classList.add('on');
+  document.getElementById('switchLinkBottom').style.display = 'none';
+
+  // Mask email
+  document.getElementById('otpTargetEmail').textContent = maskEmail(email);
+  clearOTPBoxes();
+  startOTPTimer();
+
+  showToast('OTP sent to ' + maskEmail(email) + ' ✉️', 'ok');
+  setTimeout(() => document.querySelector('.otp-box').focus(), 200);
+}
+
+function maskEmail(email) {
+  const [l, d] = email.split('@');
+  return l.slice(0,2) + '***@' + d;
+}
+
+/* ═══════════════════════════════════════
+   OTP BOX INTERACTIONS
+═══════════════════════════════════════ */
+(function initBoxes() {
+  const boxes = [...document.querySelectorAll('.otp-box')];
+  boxes.forEach((box, i) => {
+    box.addEventListener('input', e => {
+      const v = e.target.value.replace(/\D/g,'');
+      box.value = v;
+      v ? box.classList.add('filled') : box.classList.remove('filled');
+      if(v && i < boxes.length-1) boxes[i+1].focus();
+      if(boxes.every(b => b.value)) setTimeout(verifyOTP, 200);
+    });
+    box.addEventListener('keydown', e => {
+      if(e.key==='Backspace' && !box.value && i>0) boxes[i-1].focus();
+      if(e.key==='ArrowLeft' && i>0) boxes[i-1].focus();
+      if(e.key==='ArrowRight' && i<boxes.length-1) boxes[i+1].focus();
+    });
+    box.addEventListener('paste', e => {
+      e.preventDefault();
+      const paste = (e.clipboardData||window.clipboardData).getData('text').replace(/\D/g,'');
+      paste.split('').slice(0,6).forEach((ch, j) => {
+        if(boxes[i+j]){ boxes[i+j].value=ch; boxes[i+j].classList.add('filled'); }
+      });
+      boxes[Math.min(i+paste.length, 5)].focus();
+      if(boxes.every(b=>b.value)) setTimeout(verifyOTP, 200);
+    });
+  });
+})();
+
+function clearOTPBoxes() {
+  document.querySelectorAll('.otp-box').forEach(b => { b.value=''; b.classList.remove('filled','error'); });
+}
+
+/* ═══════════════════════════════════════
+   VERIFY OTP
+═══════════════════════════════════════ */
+function verifyOTP() {
+  const boxes = [...document.querySelectorAll('.otp-box')];
+  const entered = boxes.map(b => b.value).join('');
+  if(entered.length < 6){ showToast('Enter all 6 digits','err'); return; }
+
+  setLoading('otpVerifyBtn', true);
+
+  setTimeout(() => {
+    if(entered === _otp) {
+      clearInterval(_otpTimer);
+      boxes.forEach(b => { b.classList.remove('error'); b.classList.add('filled'); });
+
+      // Save to localStorage
+      const name  = _otpContext==='signup' ? document.getElementById('sName').value.trim() : (_otpEmail.split('@')[0]);
+      const biz   = _otpContext==='signup' ? document.getElementById('sBiz').value.trim() : 'My Store';
+      localStorage.setItem('isLoggedIn','true');
+      localStorage.setItem('userEmail', _otpEmail);
+      localStorage.setItem('userName', name);
+      localStorage.setItem('userRole','Vendor');
+      localStorage.setItem('bizName', biz);
+
+      showToast(_otpContext==='signup' ? 'Account created! Welcome aboard 🎉' : 'Welcome back! Logging you in ✓', 'ok');
+      showSuccess();
+    } else {
+      boxes.forEach(b => b.classList.add('error'));
+      setTimeout(() => boxes.forEach(b => { b.classList.remove('error'); b.value=''; b.classList.remove('filled'); }), 600);
+      boxes[0].focus();
+      showToast('Incorrect OTP. Please try again.','err');
+    }
+    setLoading('otpVerifyBtn', false);
+  }, 900);
+}
+
+/* ═══════════════════════════════════════
+   OTP TIMER
+═══════════════════════════════════════ */
+function startOTPTimer() {
+  clearInterval(_otpTimer);
+  let secs = 120;
+  const el = document.getElementById('otpCd');
+  const rb = document.getElementById('otpResendBtn');
+  rb.disabled = true;
+
+  function tick() {
+    const m = String(Math.floor(secs/60)).padStart(2,'0');
+    const s = String(secs%60).padStart(2,'0');
+    el.textContent = m+':'+s;
+    el.classList.toggle('urgent', secs<=30);
+    if(secs<=0){ clearInterval(_otpTimer); el.textContent='Expired'; rb.disabled=false; showToast('OTP expired. Please resend.','inf'); }
+    secs--;
+  }
+  tick();
+  _otpTimer = setInterval(tick, 1000);
+}
+
+function resendOTP() { showToast('Resending OTP…','inf'); sendOTP(_otpEmail); }
+
+function backFromOTP() {
+  document.getElementById('otp-screen').classList.remove('on');
+  clearInterval(_otpTimer);
+  document.getElementById('switchLinkBottom').style.display = '';
+  if(_otpContext==='signup'){
+    document.getElementById('panel-signup').classList.add('on');
+  } else {
+    document.getElementById('panel-login').classList.add('on');
+  }
+}
+
+/* ═══════════════════════════════════════
+   SUCCESS
+═══════════════════════════════════════ */
+function showSuccess() {
+  document.getElementById('otp-screen').classList.remove('on');
+  document.getElementById('success-screen').classList.add('on');
+  setTimeout(() => {
+    const fill = document.getElementById('successFill');
+    fill.style.width = '100%';
+  }, 100);
+  setTimeout(() => { window.location.href = 'vendor.html'; }, 2800);
+}
+
+/* ═══════════════════════════════════════
+   SOCIAL AUTH
+═══════════════════════════════════════ */
+function socialAuth(provider) {
+  showToast('Configure ' + provider + ' OAuth credentials to enable this','inf');
+}
+
+/* ═══════════════════════════════════════
+   UTILITIES
+═══════════════════════════════════════ */
+function togglePw(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  btn.textContent = inp.type==='password' ? '👁' : '🙈';
+}
+
+function setLoading(btnId, on) {
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  btn.disabled = on;
+  btn.classList.toggle('loading', on);
+}
+
+function checkPwStrength(val) {
+  const s = [1,2,3,4].map(i => document.getElementById('pws'+i));
+  const lbl = document.getElementById('pwLabel');
+  let score = 0;
+  if(val.length>=8) score++;
+  if(/[A-Z]/.test(val)) score++;
+  if(/[0-9]/.test(val)) score++;
+  if(/[^A-Za-z0-9]/.test(val)) score++;
+  const colors = ['#ff4d00','#f5a623','#3d3aff','#00c9a7'];
+  const labels = ['Too weak','Fair','Good','Strong 💪'];
+  s.forEach((seg, i) => { seg.style.background = i < score ? colors[score-1] : 'rgba(255,255,255,.08)'; });
+  lbl.textContent = val.length > 0 ? (labels[score-1]||'') : '';
+  lbl.style.color = score > 0 ? colors[score-1] : '';
+}
+
+let _toastT;
+function showToast(msg, type='inf') {
+  clearTimeout(_toastT);
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show '+type;
+  _toastT = setTimeout(() => t.className = '', 3000);
+}
+
+/* ── Check if already logged in ── */
+window.addEventListener('DOMContentLoaded', () => {
+  if(localStorage.getItem('isLoggedIn')==='true'){
+    window.location.href = 'vendor.html';
+  }
+});
+</script>
+<script src="chatbot.js"></script>
+</body>
+</html>

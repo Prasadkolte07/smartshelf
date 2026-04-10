@@ -1,0 +1,8 @@
+{
+  "name": "smartshelf-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix JS run dev",
+    "start": "npm --prefix JS run start"
+  }
+}

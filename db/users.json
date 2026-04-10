@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "name": "Demo User",
+    "email": "demo@smartshelf.com",
+    "password": "$2a$10$525jfQDl2Xv6COIDbaNX4.ys79LNd9iZluZGqa20x2lySmUiXN6PS",
+    "phone": "9876543210",
+    "role": "Customer",
+    "joined": "2026-03-13T04:20:56.200Z",
+    "verified": true,
+    "loyaltyPoints": 500
+  },
+  {
+    "id": 2,
+    "name": "Prasad",
+    "email": "prasadkolte045@gmail.com",
+    "password": "$2a$10$.DNIBDzIq9h4OdQ8JJYl.OI0PpIU5Ja0SBRos83zuGLW/YrUmStWK",
+    "phone": "9356954010",
+    "role": "Customer",
+    "joined": "2026-04-03T18:33:41.556Z",
+    "verified": false,
+    "loyaltyPoints": 0
+  }
+]
